@@ -162,7 +162,7 @@
             <label class="text-sm font-medium block">รหัสผ่าน</label>
             <div class="input-icon-wrap">
               <span class="material-symbols-outlined input-icon">lock</span>
-              <input class="input-field" id="signup-password" minlength="4" placeholder="อย่างน้อย 4 ตัวอักษร" required type="password"/>
+              <input class="input-field" id="signup-password" minlength="4" placeholder="ต้องมีตัวอักษรอย่างน้อย 1 ตัว (เช่น a123)" required type="password"/>
             </div>
           </div>
           
@@ -236,7 +236,6 @@
         <div class="grid grid-cols-7 gap-1.5" id="dashCalendarGrid"></div>
       </section>
 
-      <!-- แก้ไขโครงสร้างฝั่งขวา: ใช้ relative และ absolute ช่วยกันไม่ให้มันไปดึงความสูงของปฏิทินให้ผิดเพี้ยน -->
       <section class="relative bg-white border border-[#c2c6d4] rounded-xl shadow-sm min-h-[380px] lg:min-h-0">
         <div class="absolute inset-0 p-5 flex flex-col">
           <div class="flex items-center gap-2 border-b border-[#c2c6d4] pb-3 mb-3 shrink-0">
@@ -570,6 +569,15 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = document.getElementById('signupBtn');
   const msg = document.getElementById('signupMsg');
+  
+  const passInput = document.getElementById('signup-password').value;
+  
+  // ตรวจสอบว่ารหัสผ่านมีตัวอักษรภาษาอังกฤษ (a-z หรือ A-Z) อย่างน้อย 1 ตัว
+  if (!/[a-zA-Z]/.test(passInput)) {
+    msg.textContent = "❌ รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว (เช่น a1234)";
+    return;
+  }
+
   btn.innerHTML = `<span class="loader"></span> กำลังสมัครสมาชิก...`;
   btn.disabled = true;
   msg.textContent = '';
@@ -577,7 +585,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   const payload = {
     fullName: document.getElementById('signup-fullName').value,
     email: document.getElementById('signup-email').value,
-    password: document.getElementById('signup-password').value,
+    password: passInput,
     status: document.getElementById('signup-status').value,
     faculty: document.getElementById('signup-faculty').value,
     major: document.getElementById('signup-major').value,
