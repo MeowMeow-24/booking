@@ -159,10 +159,11 @@
             </div>
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium block">รหัสผ่าน</label>
+            <label class="text-sm font-medium block">รหัสผ่าน (ต้องมีตัวอักษรอย่างน้อย 1 ตัว)</label>
             <div class="input-icon-wrap">
               <span class="material-symbols-outlined input-icon">lock</span>
-              <input class="input-field" id="signup-password" minlength="4" placeholder="ต้องมีตัวอักษรอย่างน้อย 1 ตัว (เช่น a123)" required type="password"/>
+              <!-- เพิ่ม pattern ดักจาก HTML -->
+              <input class="input-field" id="signup-password" minlength="4" pattern=".*[a-zA-Z].*" title="รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว (เช่น a1234)" placeholder="ต้องมีตัวอักษรผสมตัวเลข" required type="password"/>
             </div>
           </div>
           
@@ -572,10 +573,10 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   
   const passInput = document.getElementById('signup-password').value;
   
-  // ตรวจสอบว่ารหัสผ่านมีตัวอักษรภาษาอังกฤษ (a-z หรือ A-Z) อย่างน้อย 1 ตัว
+  // เพิ่มการดักจับด้วย JavaScript ป้องกันกดผ่าน
   if (!/[a-zA-Z]/.test(passInput)) {
-    msg.textContent = "❌ รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว (เช่น a1234)";
-    return;
+    msg.textContent = "❌ สมัครไม่สำเร็จ: รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว (เช่น a123)";
+    return; // สั่งเบรกการทำงานตรงนี้ทันที
   }
 
   btn.innerHTML = `<span class="loader"></span> กำลังสมัครสมาชิก...`;
