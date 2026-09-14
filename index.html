@@ -2,483 +2,318 @@
 <html lang="th">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>ระบบจองห้องประชุมมหาวิทยาลัย</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Meetly — ระบบจองห้องประชุม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "outline": "#727784", "surface": "#f9f9ff", 
-          "primary": "#1b3b6f", "error": "#ba1a1a",
-          "surface-container-low": "#f2f3fc", "on-surface-variant": "#424752",
-          "secondary": "#555f6b", "primary-container": "#123058",
-          "free": "#22c55e", "busy": "#ba1a1a", "partial": "#f59e0b",
-          "error-container": "#ffdad6", "on-error-container": "#93000a",
-        },
-        borderRadius: { DEFAULT: "0.5rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
-        fontFamily: { body: ["Be Vietnam Pro", "sans-serif"] }
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        ink: "#101828",
+        muted: "#667085",
+        line: "#E4E7EC",
+        cloud: "#F7F9FC",
+        navy: "#193B69",
+        mint: "#0E9384",
+        success: "#12B76A",
+        warning: "#F79009",
+        danger: "#D92D20"
+      },
+      boxShadow: {
+        soft: "0 8px 30px rgba(16,24,40,.06)",
+        lift: "0 18px 45px rgba(25,59,105,.12)"
+      },
+      fontFamily: {
+        body: ["Be Vietnam Pro","sans-serif"],
+        display: ["Manrope","Be Vietnam Pro","sans-serif"]
       }
     }
   }
+}
 </script>
 <style>
-  body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f9f9ff; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .icon-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .input-field { width:100%; padding:12px 16px; background:#fff; border:1px solid #c2c6d4; border-radius:10px !important; font-size:16px; color:#191c21; transition:all .2s; }
-  .input-field:focus { outline:none; border-color:#1b3b6f; box-shadow:0 0 0 3px rgba(27,59,111,0.14); }
-  .input-icon-wrap { position:relative; }
-  .input-icon-wrap .input-field { padding-left:44px; }
-  .input-icon-wrap .input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#727784; pointer-events:none; font-size:20px; }
-  .page { display:none; }
-  .page.active { display:block; }
-  .room-card-dot { width:8px; height:8px; border-radius:9999px; }
-  .cal-day { aspect-ratio: 1/1; }
-  .primary-btn { background:#1b3b6f; }
-  .primary-btn:hover { background:#0f6f66; }
-  .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1b3b6f; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
-  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  ::-webkit-scrollbar { height:6px; width:6px; }
-  ::-webkit-scrollbar-thumb { background:#c2c6d4; border-radius:9999px; }
+.fixed.inset-0:not(.hidden){display:flex}
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24}
+.icon-fill{font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 24}
+.page{display:none}.page.active{display:block}
+.glass{background:rgba(255,255,255,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.input-field{width:100%;padding:13px 15px;background:#fff;border:1px solid #D0D5DD;border-radius:14px;font-size:15px;color:#101828;transition:.2s}
+.input-field:focus{outline:none;border-color:#193B69;box-shadow:0 0 0 4px rgba(25,59,105,.10)}
+.input-icon-wrap{position:relative}.input-icon-wrap .input-field{padding-left:45px}.input-icon-wrap .input-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#98A2B3;pointer-events:none}
+.primary-btn{background:linear-gradient(135deg,#193B69,#0E9384);box-shadow:0 8px 20px rgba(25,59,105,.18)}
+.primary-btn:hover{filter:brightness(.97);transform:translateY(-1px)}
+.primary-btn:disabled{transform:none;filter:none}
+.loader{width:19px;height:19px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cal-day{aspect-ratio:1/1;min-height:54px}
+.cal-day:hover{transform:translateY(-1px)}
+.calendar-panel,.daily-panel{height:668px;min-height:668px;max-height:668px;align-self:stretch;overflow:hidden}.calendar-panel{display:flex;flex-direction:column}.calendar-panel #dashCalendarGrid{flex:1;min-height:0}.calendar-panel #dashCalendarGrid .cal-day{height:auto;min-height:0}.daily-panel{display:flex;flex-direction:column}
+.daily-list-header{flex:none}
+.daily-date{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-availability{min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.room-rate{white-space:nowrap}
+.booking-price{white-space:nowrap;font-variant-numeric:tabular-nums}
+.daily-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.booking-card{padding:12px;border:1px solid #E4E7EC;border-radius:16px;background:linear-gradient(180deg,#fff,#F8FAFC);transition:.2s}
+.booking-card:hover{border-color:#C9D5E7;box-shadow:0 8px 20px rgba(16,24,40,.06);transform:translateY(-1px)}
+.price-badge{font-variant-numeric:tabular-nums}.admin-chart-wrap{height:320px;position:relative}.admin-view-btn.active{background:#193B69;color:#fff;border-color:#193B69}.admin-view-btn{transition:.2s}
+.room-price-card{min-height:112px}
+@media (max-width:1023px){.calendar-panel,.daily-panel{height:auto;min-height:0;max-height:none}.calendar-panel{min-height:560px}.daily-panel{height:560px;max-height:560px;min-height:560px}}
+@media (max-width:640px){.calendar-panel{min-height:500px}.daily-panel{height:500px;max-height:500px;min-height:500px}}
+.card-hover{transition:.2s}.card-hover:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(16,24,40,.08)}
+::-webkit-scrollbar{height:7px;width:7px}::-webkit-scrollbar-thumb{background:#D0D5DD;border-radius:999px}
+@media (max-width:640px){.cal-day{min-height:42px}.hide-mobile{display:none!important}}
 </style>
 </head>
-<body class="text-[#191c21]">
+<body>
 
-<!-- ============ หน้าล็อกอิน ============ -->
+<!-- LOGIN -->
 <div class="page" id="page-login">
-  <div class="min-h-screen flex items-center justify-center p-4 md:p-10">
-    <div class="max-w-md w-full bg-white rounded-xl shadow-sm border border-[#c2c6d4]/30 overflow-hidden relative">
-      <div class="px-8 py-8 text-center border-b border-[#c2c6d4]/20 bg-[#f2f3fc]/50">
-        <button class="absolute left-4 top-4 text-secondary hover:text-primary flex items-center gap-1 text-sm" onclick="showPage('dashboard')">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span> กลับ
+  <div class="min-h-screen grid lg:grid-cols-2">
+    <section class="hidden lg:flex relative overflow-hidden bg-[#102A4C] p-12 text-white">
+      <div class="absolute -right-28 -top-28 w-96 h-96 rounded-full bg-[#0E9384]/30 blur-3xl"></div>
+      <div class="absolute -left-20 bottom-0 w-80 h-80 rounded-full bg-[#2F6FED]/20 blur-3xl"></div>
+      <div class="relative z-10 flex flex-col justify-between w-full">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
+            <span class="material-symbols-outlined icon-fill">meeting_room</span>
+          </div>
+          <div><div class="font-bold text-lg">Meetly</div><div class="text-xs text-white/55">University Meeting Space</div></div>
+        </div>
+        <div class="max-w-lg">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs mb-5">
+            <span class="w-2 h-2 rounded-full bg-[#12B76A]"></span> ระบบพร้อมใช้งาน
+          </div>
+          <h1 class="font-display text-5xl font-extrabold leading-tight">จองห้องประชุม<br/>ได้ง่ายในไม่กี่คลิก</h1>
+          <p class="mt-5 text-white/65 leading-7">เช็กเวลาว่าง เลือกช่วงเวลา และติดตามการจองของคุณในที่เดียว</p>
+        </div>
+        <div class="text-xs text-white/40">University Meeting Room Management</div>
+      </div>
+    </section>
+    <section class="min-h-screen flex items-center justify-center p-5 md:p-10">
+      <div class="w-full max-w-md">
+        <button class="mb-7 inline-flex items-center gap-1.5 text-sm text-[#667085] hover:text-[#193B69]" onclick="showPage('dashboard')">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span> กลับหน้าหลัก
         </button>
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full text-white mb-3 shadow-sm bg-gradient-to-br from-[#1b3b6f] to-[#0f6f66]">
-          <span class="material-symbols-outlined text-3xl icon-fill">meeting_room</span>
-        </div>
-        <h1 class="text-2xl font-semibold text-primary mb-1">ระบบจองห้องประชุม</h1>
-      </div>
-      <div class="p-8">
-        <form id="loginForm" class="space-y-5">
-          <div class="space-y-1">
-            <label class="text-sm font-medium block">อีเมลผู้ใช้งาน</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon">mail</span>
-              <input class="input-field" id="login-email" placeholder="กรอกอีเมล หรือ admin" required type="text"/>
+        <div class="bg-white border border-[#EAECF0] rounded-[28px] p-7 md:p-9 shadow-soft">
+          <div class="flex items-center gap-3 mb-7">
+            <div class="w-12 h-12 rounded-2xl bg-[#EEF4FF] text-[#193B69] flex items-center justify-center">
+              <span class="material-symbols-outlined icon-fill">login</span>
             </div>
+            <div><h2 class="font-display text-2xl font-extrabold">เข้าสู่ระบบ</h2><p class="text-sm text-[#667085]">จัดการการจองของคุณ</p></div>
           </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium block">รหัสผ่าน</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon">lock</span>
-              <input class="input-field" id="login-password" placeholder="กรอกรหัสผ่าน" required type="password"/>
+          <form id="loginForm" class="space-y-4">
+            <div><label class="block text-sm font-semibold mb-1.5">อีเมลผู้ใช้งาน</label>
+              <div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">mail</span><input class="input-field" id="login-email" placeholder="name@university.ac.th หรือ admin" required type="text"/></div>
             </div>
+            <div><label class="block text-sm font-semibold mb-1.5">รหัสผ่าน</label>
+              <div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">lock</span><input class="input-field" id="login-password" placeholder="กรอกรหัสผ่าน" required type="password"/></div>
+            </div>
+            <p id="loginMsg" class="text-sm font-medium text-[#D92D20] min-h-5"></p>
+            <button class="primary-btn w-full text-white py-3.5 rounded-2xl font-bold transition flex items-center justify-center gap-2" type="submit" id="loginBtn">
+              <span>เข้าสู่ระบบ</span><span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+            </button>
+          </form>
+          <div class="mt-6 pt-5 border-t border-[#EAECF0] text-center text-sm text-[#667085]">ยังไม่มีบัญชี?
+            <a class="text-[#193B69] font-bold hover:underline" href="#" onclick="showPage('signup');return false;">สมัครสมาชิก</a>
           </div>
-          <p id="loginMsg" class="text-sm font-medium text-error"></p>
-          <button class="w-full primary-btn text-white py-3 rounded-lg font-semibold transition-all flex justify-center items-center gap-2" type="submit" id="loginBtn">
-            <span>เข้าสู่ระบบ</span><span class="material-symbols-outlined text-[18px]">login</span>
-          </button>
-        </form>
-        <div class="mt-6 text-center text-sm">
-          ยังไม่มีบัญชี? <a class="text-primary font-semibold underline" href="#" onclick="showPage('signup');return false;">สมัครสมาชิก</a>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
-<!-- ============ หน้าสมัครสมาชิก ============ -->
+<!-- SIGNUP -->
 <div class="page" id="page-signup">
-  <div class="min-h-screen flex items-center justify-center p-4 md:p-10">
-    <div class="max-w-lg w-full bg-white rounded-xl shadow-sm border border-[#c2c6d4]/30 overflow-hidden relative">
-      <div class="px-8 py-6 text-center border-b border-[#c2c6d4]/20 bg-[#f2f3fc]/50">
-        <button class="absolute left-4 top-4 text-secondary hover:text-primary flex items-center gap-1 text-sm" onclick="showPage('dashboard')">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span> กลับ
-        </button>
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full text-white mb-2 shadow-sm bg-gradient-to-br from-[#1b3b6f] to-[#0f6f66]">
-          <span class="material-symbols-outlined text-2xl icon-fill">person_add</span>
+  <div class="min-h-screen flex items-center justify-center p-5 md:p-10">
+    <div class="w-full max-w-2xl">
+      <button class="mb-7 inline-flex items-center gap-1.5 text-sm text-[#667085] hover:text-[#193B69]" onclick="showPage('dashboard')">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span> กลับหน้าหลัก
+      </button>
+      <div class="bg-white border border-[#EAECF0] rounded-[28px] overflow-hidden shadow-soft">
+        <div class="relative overflow-hidden px-7 py-7 md:px-9 md:py-8 bg-gradient-to-br from-[#102A4C] to-[#145B6A] text-white">
+          <div class="absolute -right-14 -top-14 w-48 h-48 rounded-full bg-white/10"></div>
+          <div class="relative flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined icon-fill">person_add</span></div>
+            <div><h2 class="font-display text-2xl font-extrabold">สร้างบัญชี</h2><p class="text-sm text-white/65">สมัครเพื่อเริ่มจองห้องประชุม</p></div>
+          </div>
         </div>
-        <h1 class="text-xl font-semibold text-primary mb-1">สมัครสมาชิก</h1>
-      </div>
-      <div class="p-6 md:p-8">
-        <form id="signupForm" class="space-y-4">
-          <div class="space-y-1">
-            <label class="text-sm font-medium block">ชื่อ-นามสกุล</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon">person</span>
-              <input class="input-field" id="signup-fullName" placeholder="ตัวอย่าง: สมชาย ใจดี" required type="text"/>
+        <div class="p-7 md:p-9">
+          <form id="signupForm" class="space-y-4">
+            <div><label class="text-sm font-semibold block mb-1.5">ชื่อ-นามสกุล</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">person</span><input class="input-field" id="signup-fullName" placeholder="ตัวอย่าง: สมชาย ใจดี" required type="text"/></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div><label class="text-sm font-semibold block mb-1.5">สถานะ</label><select class="input-field" id="signup-status" required><option disabled selected value="">เลือกสถานะ...</option><option value="นักศึกษา">นักศึกษา</option><option value="อาจารย์">อาจารย์</option><option value="บุคลากร">บุคลากร</option></select></div>
+              <div><label class="text-sm font-semibold block mb-1.5">เบอร์โทรศัพท์</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">call</span><input class="input-field" id="signup-phone" placeholder="08X-XXX-XXXX" required type="tel"/></div></div>
             </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <label class="text-sm font-medium block">สถานะ</label>
-              <select class="input-field" id="signup-status" required>
-                <option disabled selected value="">เลือกสถานะ...</option>
-                <option value="นักศึกษา">นักศึกษา</option>
-                <option value="อาจารย์">อาจารย์</option>
-                <option value="บุคลากร">บุคลากร</option>
-              </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div><label class="text-sm font-semibold block mb-1.5">คณะ</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">domain</span><input class="input-field" id="signup-faculty" placeholder="เช่น วิศวกรรมศาสตร์" required type="text"/></div></div>
+              <div><label class="text-sm font-semibold block mb-1.5">สาขาวิชา</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">school</span><input class="input-field" id="signup-major" placeholder="เช่น วิศวกรรมคอมพิวเตอร์" required type="text"/></div></div>
             </div>
-            <div class="space-y-1">
-              <label class="text-sm font-medium block">เบอร์โทรศัพท์</label>
-              <div class="input-icon-wrap">
-                <span class="material-symbols-outlined input-icon">call</span>
-                <input class="input-field" id="signup-phone" placeholder="08X-XXX-XXXX" required type="tel"/>
-              </div>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <label class="text-sm font-medium block">คณะ</label>
-              <div class="input-icon-wrap">
-                <span class="material-symbols-outlined input-icon">domain</span>
-                <input class="input-field" id="signup-faculty" placeholder="เช่น วิศวกรรมศาสตร์" required type="text"/>
-              </div>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm font-medium block">สาขาวิชา</label>
-              <div class="input-icon-wrap">
-                <span class="material-symbols-outlined input-icon">school</span>
-                <input class="input-field" id="signup-major" placeholder="เช่น วิศวกรรมคอมพิวเตอร์" required type="text"/>
-              </div>
-            </div>
-          </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium block">อีเมล</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon">mail</span>
-              <input class="input-field" id="signup-email" placeholder="name@university.ac.th" required type="email"/>
-            </div>
-          </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium block">รหัสผ่าน (ต้องมีตัวอักษรอย่างน้อย 1 ตัว)</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon">lock</span>
-              <!-- เพิ่ม pattern ดักจาก HTML -->
-              <input class="input-field" id="signup-password" minlength="4" pattern=".*[a-zA-Z].*" title="รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว (เช่น a1234)" placeholder="ต้องมีตัวอักษรผสมตัวเลข" required type="password"/>
-            </div>
-          </div>
-          
-          <p id="signupMsg" class="text-sm font-medium text-error"></p>
-          <button class="w-full primary-btn text-white py-3 rounded-lg font-semibold transition-all flex justify-center items-center gap-2 mt-2" type="submit" id="signupBtn">
-            <span>สมัครสมาชิก</span> <span class="material-symbols-outlined text-[18px]">person_add</span>
-          </button>
-        </form>
-        <div class="mt-4 text-center text-sm">
-          มีบัญชีแล้ว? <a class="text-primary font-semibold underline" href="#" onclick="showPage('login');return false;">เข้าสู่ระบบ</a>
+            <div><label class="text-sm font-semibold block mb-1.5">อีเมล</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">mail</span><input class="input-field" id="signup-email" placeholder="name@university.ac.th" required type="email"/></div></div>
+            <div><label class="text-sm font-semibold block mb-1.5">รหัสผ่าน <span class="font-normal text-[#98A2B3]">(อย่างน้อย 4 ตัว และมีตัวอักษรอังกฤษ)</span></label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">lock</span><input class="input-field" id="signup-password" minlength="4" pattern=".*[a-zA-Z].*" title="รหัสผ่านต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 1 ตัว" placeholder="ผสมตัวอักษรและตัวเลข" required type="password"/></div></div>
+            <p id="signupMsg" class="text-sm font-medium text-[#D92D20] min-h-5"></p>
+            <button class="primary-btn w-full text-white py-3.5 rounded-2xl font-bold transition flex items-center justify-center gap-2" type="submit" id="signupBtn"><span>สมัครสมาชิก</span><span class="material-symbols-outlined text-[19px]">person_add</span></button>
+          </form>
+          <div class="mt-6 text-center text-sm text-[#667085]">มีบัญชีแล้ว? <a class="text-[#193B69] font-bold hover:underline" href="#" onclick="showPage('login');return false;">เข้าสู่ระบบ</a></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============ หน้าแดชบอร์ด (หน้าหลัก) ============ -->
+<!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
-  <nav class="bg-white border-b border-[#c2c6d4] px-4 md:px-10 py-3 flex items-center justify-between sticky top-0 z-40">
-    <div class="flex items-center gap-2 font-semibold text-primary">
-      <span class="material-symbols-outlined">meeting_room</span> ระบบจองห้องประชุม
-    </div>
-    
-    <div class="flex items-center gap-3" id="navGuestActions">
-      <button class="text-primary font-medium text-sm px-3 py-1.5 rounded-lg border border-[#a9d3d0]" onclick="showPage('login')">เข้าสู่ระบบ</button>
-      <button class="primary-btn text-white font-medium text-sm px-3 py-1.5 rounded-lg" onclick="showPage('signup')">สมัครสมาชิก</button>
-    </div>
-    
-    <div class="hidden items-center gap-2 md:gap-4" id="navUserActions">
-      <button class="hidden text-primary font-medium text-sm items-center gap-1 px-3 py-1.5 rounded-lg border border-[#c2c6d4] hover:bg-[#f2f3fc] transition-colors" id="adminNavBtn" onclick="goToAdmin()">
-        <span class="material-symbols-outlined text-[18px]">insights</span> แผงผู้บริหาร
-      </button>
-      <div class="flex items-center gap-1.5 bg-[#f2f3fc] border border-[#c2c6d4] px-3 py-1.5 rounded-full">
-        <span class="material-symbols-outlined text-primary text-[18px]">account_circle</span>
-        <span class="text-sm font-bold text-primary" id="navUserName">-</span>
+  <nav class="sticky top-0 z-40 border-b border-[#EAECF0] glass">
+    <div class="max-w-7xl mx-auto px-4 md:px-7 h-[72px] flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#193B69] to-[#0E9384] text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined icon-fill">meeting_room</span></div>
+        <div><div class="font-display font-extrabold text-[17px]">Meetly</div><div class="text-[11px] text-[#98A2B3]">Meeting Room System</div></div>
       </div>
-      <button class="text-error font-medium text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-[#ffdad6] transition-colors" onclick="logout()">
-        <span class="material-symbols-outlined text-[18px]">logout</span> 
-        <span class="hidden sm:inline">ออกจากระบบ</span>
-      </button>
+      <div class="flex items-center gap-2" id="navGuestActions">
+        <button class="px-4 py-2 rounded-xl text-sm font-semibold text-[#193B69] hover:bg-[#EEF4FF]" onclick="showPage('login')">เข้าสู่ระบบ</button>
+        <button class="primary-btn text-white px-4 py-2.5 rounded-xl text-sm font-bold" onclick="showPage('signup')">สมัครสมาชิก</button>
+      </div>
+      <div class="hidden items-center gap-2" id="navUserActions">
+        <button class="hidden items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-[#193B69] border border-[#D0D5DD] hover:bg-white" id="adminNavBtn" onclick="goToAdmin()"><span class="material-symbols-outlined text-[18px]">space_dashboard</span><span class="hide-mobile">แผงผู้บริหาร</span></button>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#F2F4F7] border border-[#EAECF0]"><span class="material-symbols-outlined text-[#193B69] text-[18px]">account_circle</span><span class="text-sm font-bold text-[#344054]" id="navUserName">-</span></div>
+        <button class="px-3 py-2 rounded-xl text-sm font-semibold text-[#D92D20] hover:bg-[#FEF3F2]" onclick="logout()"><span class="material-symbols-outlined text-[18px] align-middle">logout</span><span class="hide-mobile ml-1">ออกจากระบบ</span></button>
+      </div>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto p-4 md:p-10 flex flex-col gap-8">
-    <header class="flex justify-between items-end">
-      <div>
-        <h1 class="text-2xl font-semibold">ภาพรวมการจองห้องประชุม</h1>
-        <p class="text-secondary text-sm mt-1">คลิกเลือกวันที่เพื่อดูผู้จอง หรือ <span class="text-primary font-semibold">ดับเบิลคลิก (Double Click)</span> ที่วันที่เพื่อเปิดฟอร์มจองห้อง</p>
+  <main class="max-w-7xl mx-auto p-4 md:p-7 lg:p-8 space-y-6">
+    <section class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#102A4C] via-[#193B69] to-[#0E9384] text-white p-6 md:p-8 shadow-lift">
+      <div class="absolute -right-10 -top-20 w-72 h-72 rounded-full bg-white/10 blur-2xl"></div>
+      <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div><div class="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-white/10 border border-white/10 mb-4"><span class="w-2 h-2 rounded-full bg-[#12B76A]"></span> ระบบจองห้องประชุม</div>
+          <h1 class="font-display text-3xl md:text-4xl font-extrabold leading-tight">วางแผนการประชุม<br class="md:hidden"/> ได้ง่ายกว่าเดิม</h1>
+          <p class="mt-3 text-sm md:text-base text-white/70 max-w-2xl">ตรวจสอบเวลาว่าง เลือกห้อง และดูประวัติการจองทั้งหมดจากหน้าเดียว</p>
+        </div>
+        <button onclick="openBookingFormModal(toISO(new Date()))" class="bg-white text-[#193B69] px-5 py-3.5 rounded-2xl font-extrabold flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transition"><span class="material-symbols-outlined">add</span> จองห้องประชุม</button>
       </div>
-      <button onclick="openBookingFormModal(toISO(new Date()))" class="primary-btn text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-sm">
-        <span class="material-symbols-outlined text-[18px]">add</span> จองห้องประชุม
-      </button>
-    </header>
+    </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-      <section class="lg:col-span-2 bg-white border border-[#c2c6d4] rounded-xl p-5 md:p-6 flex flex-col gap-4 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">calendar_month</span>
-            <h2 class="text-lg font-semibold">ปฏิทินสถานะห้องประชุม</h2>
-          </div>
-          <div class="flex items-center gap-2">
-            <button class="w-8 h-8 flex justify-center items-center rounded-lg border border-[#c2c6d4]" onclick="changeDashMonth(-1)"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
-            <span class="text-sm font-medium w-32 text-center" id="dashCalLabel">-</span>
-            <button class="w-8 h-8 flex justify-center items-center rounded-lg border border-[#c2c6d4]" onclick="changeDashMonth(1)"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
-          </div>
+    <section class="grid grid-cols-1 xl:grid-cols-[1.7fr_1fr] gap-6">
+      <div class="calendar-panel bg-white border border-[#EAECF0] rounded-[24px] p-5 md:p-6 shadow-soft">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#193B69]">calendar_month</span><h2 class="font-display text-xl font-extrabold">ปฏิทินห้องประชุม</h2></div><p class="text-xs text-[#98A2B3] mt-1">คลิกวันที่เพื่อดูรายละเอียด · ดับเบิลคลิกเพื่อจอง</p></div>
+          <div class="flex items-center gap-1.5"><button class="w-9 h-9 rounded-xl border border-[#D0D5DD] hover:bg-[#F9FAFB]" onclick="changeDashMonth(-1)"><span class="material-symbols-outlined text-[19px]">chevron_left</span></button><span class="min-w-[145px] text-center text-sm font-bold text-[#344054]" id="dashCalLabel">-</span><button class="w-9 h-9 rounded-xl border border-[#D0D5DD] hover:bg-[#F9FAFB]" onclick="changeDashMonth(1)"><span class="material-symbols-outlined text-[19px]">chevron_right</span></button></div>
         </div>
-        <div class="grid grid-cols-7 gap-1.5 text-center text-xs text-secondary font-medium">
-          <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
-        </div>
+        <div class="flex items-center gap-4 text-xs text-[#667085] mb-4"><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#12B76A]"></i>ว่าง</span><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#F79009]"></i>มีการจอง</span><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#D92D20]"></i>เต็ม</span></div>
+        <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-semibold text-[#98A2B3] mb-1"><div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div></div>
         <div class="grid grid-cols-7 gap-1.5" id="dashCalendarGrid"></div>
-      </section>
+      </div>
 
-      <section class="relative bg-white border border-[#c2c6d4] rounded-xl shadow-sm min-h-[380px] lg:min-h-0">
-        <div class="absolute inset-0 p-5 flex flex-col">
-          <div class="flex items-center gap-2 border-b border-[#c2c6d4] pb-3 mb-3 shrink-0">
-            <span class="material-symbols-outlined text-primary text-[20px]">group</span>
-            <h3 class="font-semibold text-primary text-sm truncate" id="selectedDateTitle">ผู้จองประจำวัน</h3>
-          </div>
-          <div class="flex-grow flex flex-col gap-3 overflow-y-auto min-h-0 pr-1" id="dailyBookingsList">
-            <p class="text-sm text-secondary text-center my-auto">คลิกเลือกวันที่บนปฏิทินเพื่อดูรายชื่อผู้จองและคณะ</p>
-          </div>
-        </div>
-      </section>
-    </div>
+      <div class="bg-white border border-[#EAECF0] rounded-[24px] p-5 md:p-6 shadow-soft daily-panel overflow-hidden">
+        <div class="flex items-center justify-between gap-3 pb-4 border-b border-[#EAECF0] shrink-0"><div><h3 class="font-display font-extrabold">ผู้จองประจำวัน</h3><p class="text-xs text-[#98A2B3] mt-1" id="selectedDateTitle" class="daily-date">-</p></div><div class="w-10 h-10 rounded-xl bg-[#EEF4FF] text-[#193B69] flex items-center justify-center"><span class="material-symbols-outlined">group</span></div></div>
+        <div class="daily-list flex-1 overflow-y-auto pt-4 space-y-3 pr-1" id="dailyBookingsList"><p class="text-sm text-[#98A2B3] text-center my-auto">เลือกวันที่บนปฏิทินเพื่อดูรายชื่อผู้จอง</p></div>
+      </div>
+    </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-      <section class="bg-white border border-[#c2c6d4] rounded-xl overflow-hidden shadow-sm flex flex-col h-full">
-        <div class="p-4 border-b border-[#c2c6d4] bg-[#f2f3fc]/50">
-          <h2 class="text-lg font-semibold">ห้องประชุมวันนี้</h2>
-        </div>
-        <div class="p-4 flex flex-col gap-3 flex-grow" id="roomGrid"></div>
-      </section>
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white border border-[#EAECF0] rounded-[24px] shadow-soft overflow-hidden">
+        <div class="p-5 md:p-6 flex items-center justify-between border-b border-[#EAECF0]"><div><h2 class="font-display text-xl font-extrabold">ห้องประชุมวันที่เลือก</h2><p class="text-xs text-[#98A2B3] mt-1">สถานะและอัตราค่าบริการรายรอบ</p></div><span class="material-symbols-outlined text-[#193B69]">meeting_room</span></div>
+        <div class="p-5 md:p-6 grid sm:grid-cols-2 gap-3" id="roomGrid"></div>
+      </div>
 
-      <section class="bg-white border border-[#c2c6d4] rounded-xl overflow-hidden shadow-sm flex flex-col h-full">
-        <div class="p-4 border-b border-[#c2c6d4] bg-[#f2f3fc]/50">
-          <h2 class="text-lg font-semibold">ประวัติการจองของฉัน</h2>
-        </div>
-        <div class="overflow-auto flex-grow max-h-[400px]">
-          <table class="w-full text-left border-collapse relative">
-            <thead class="sticky top-0 bg-[#f2f3fc] z-10 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-              <tr class="text-sm border-b border-[#c2c6d4]">
-                <th class="p-3 font-semibold">ห้องประชุม</th>
-                <th class="p-3 font-semibold">วันที่/เวลา</th>
-                <th class="p-3 font-semibold text-center">สถานะ</th>
-              </tr>
-            </thead>
-            <tbody class="text-sm divide-y divide-[#c2c6d4]/50" id="myBookingBody"></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+      <div class="bg-white border border-[#EAECF0] rounded-[24px] shadow-soft overflow-hidden">
+        <div class="p-5 md:p-6 flex items-center justify-between border-b border-[#EAECF0]"><div><h2 class="font-display text-xl font-extrabold">การจองของฉัน</h2><p class="text-xs text-[#98A2B3] mt-1">ดูย้อนหลังและยกเลิกการจอง</p></div><span class="material-symbols-outlined text-[#193B69]">history</span></div>
+        <div class="overflow-auto max-h-[360px]"><table class="w-full text-left"><thead class="sticky top-0 bg-white border-b border-[#EAECF0] z-10"><tr class="text-xs text-[#667085]"><th class="p-4">ห้อง</th><th class="p-4">วัน / เวลา</th><th class="p-4 text-center">ราคา</th><th class="p-4 text-center">สถานะ</th></tr></thead><tbody class="text-sm divide-y divide-[#F2F4F7]" id="myBookingBody"></tbody></table></div>
+      </div>
+    </section>
   </main>
 </div>
 
-<!-- ============ หน้าแผงผู้บริหาร ============ -->
+<!-- ADMIN -->
 <div class="page" id="page-admin">
-  <nav class="bg-white border-b border-[#c2c6d4] px-4 md:px-10 py-3 flex items-center justify-between sticky top-0 z-40">
-    <div class="flex items-center gap-2 font-semibold text-primary">
-      <span class="material-symbols-outlined">insights</span> แผงผู้บริหาร · รายงานสถิติ
-    </div>
-    <div class="flex items-center gap-3">
-      <button class="text-primary font-medium text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#c2c6d4] hover:bg-[#f2f3fc] transition-colors" onclick="goToDashboard()">
-        <span class="material-symbols-outlined text-[18px]">arrow_back</span> กลับหน้าจอง
-      </button>
-      <button class="text-error font-medium text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-error-container" onclick="logout()">
-        <span class="material-symbols-outlined text-[18px]">logout</span> 
-        <span class="hidden sm:inline">ออกจากระบบ</span>
-      </button>
+  <nav class="sticky top-0 z-40 border-b border-[#EAECF0] glass">
+    <div class="max-w-7xl mx-auto px-4 md:px-7 h-[72px] flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[#EEF4FF] text-[#193B69] flex items-center justify-center"><span class="material-symbols-outlined icon-fill">space_dashboard</span></div><div><div class="font-display font-extrabold text-[17px]">แผงผู้บริหาร</div><div class="text-[11px] text-[#98A2B3]">Meeting Analytics</div></div></div>
+      <div class="flex items-center gap-2"><button class="px-3 py-2 rounded-xl border border-[#D0D5DD] text-sm font-semibold text-[#344054] hover:bg-white flex items-center gap-1.5" onclick="goToDashboard()"><span class="material-symbols-outlined text-[18px]">arrow_back</span><span class="hide-mobile">กลับหน้าจอง</span></button><button class="px-3 py-2 rounded-xl text-sm font-semibold text-[#D92D20] hover:bg-[#FEF3F2]" onclick="logout()"><span class="material-symbols-outlined text-[18px]">logout</span></button></div>
     </div>
   </nav>
+  <main class="max-w-7xl mx-auto p-4 md:p-7 lg:p-8 space-y-6">
+    <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-4"><div><p class="text-xs font-bold text-[#0E9384] uppercase tracking-[.18em]">Overview</p><h1 class="font-display text-3xl font-extrabold mt-1">รายงานสรุปการใช้งาน</h1><p class="text-sm text-[#667085] mt-2">วิเคราะห์การใช้งานห้องประชุมและตรวจสอบประวัติการจอง</p></div><button onclick="exportExcel()" class="primary-btn text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2"><span class="material-symbols-outlined">download</span> ดาวน์โหลด Excel ตามตัวกรอง</button></section>
 
-  <main class="max-w-6xl mx-auto p-4 md:p-10 flex flex-col gap-8">
-    <header class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold">รายงานสรุปการใช้งานห้องประชุม</h1>
-        <p class="text-secondary text-sm mt-1">ประเมินภาระงานและตรวจสอบความถี่การใช้งานห้องประชุมเพื่อการวางแผนบำรุงรักษา</p>
-      </div>
-      <button onclick="exportExcel()" class="bg-[#0f6f66] hover:bg-[#1b3b6f] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-sm">
-        <span class="material-symbols-outlined text-[18px]">download</span> ดาวน์โหลด Excel
-      </button>
-    </header>
-
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white border border-[#c2c6d4] rounded-xl p-5 flex flex-col gap-1 shadow-sm">
-        <span class="text-xs text-secondary font-medium">จำนวนการจองทั้งหมด</span>
-        <span class="text-3xl font-bold text-primary" id="kpiTotalBookings">0</span>
-      </div>
-      <div class="bg-white border border-[#c2c6d4] rounded-xl p-5 flex flex-col gap-1 shadow-sm">
-        <span class="text-xs text-secondary font-medium">ชั่วโมงการใช้งานรวม</span>
-        <span class="text-3xl font-bold text-primary" id="kpiTotalHours">0</span>
-      </div>
-      <div class="bg-white border border-[#c2c6d4] rounded-xl p-5 flex flex-col gap-1 shadow-sm">
-        <span class="text-xs text-secondary font-medium">ผู้เข้าประชุมรวม (คน)</span>
-        <span class="text-3xl font-bold text-primary" id="kpiTotalAttendees">0</span>
-      </div>
-      <div class="bg-white border border-[#c2c6d4] rounded-xl p-5 flex flex-col gap-1 shadow-sm">
-        <span class="text-xs text-secondary font-medium">ห้องที่ถูกใช้งานบ่อยที่สุด</span>
-        <span class="text-xl font-bold text-primary truncate mt-1" id="kpiTopRoom">-</span>
-      </div>
+    <section class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="bg-white border border-[#EAECF0] rounded-[20px] p-5 shadow-soft card-hover"><div class="w-10 h-10 rounded-xl bg-[#EEF4FF] text-[#193B69] flex items-center justify-center mb-4"><span class="material-symbols-outlined">event_available</span></div><div class="text-xs text-[#667085] font-semibold">จำนวนการจอง</div><div class="text-3xl font-extrabold mt-1" id="kpiTotalBookings">0</div></div>
+      <div class="bg-white border border-[#EAECF0] rounded-[20px] p-5 shadow-soft card-hover"><div class="w-10 h-10 rounded-xl bg-[#ECFDF3] text-[#039855] flex items-center justify-center mb-4"><span class="material-symbols-outlined">schedule</span></div><div class="text-xs text-[#667085] font-semibold">ชั่วโมงใช้งานรวม</div><div class="text-3xl font-extrabold mt-1" id="kpiTotalHours">0</div></div>
+      <div class="bg-white border border-[#EAECF0] rounded-[20px] p-5 shadow-soft card-hover"><div class="w-10 h-10 rounded-xl bg-[#FFFAEB] text-[#B54708] flex items-center justify-center mb-4"><span class="material-symbols-outlined">groups</span></div><div class="text-xs text-[#667085] font-semibold">ผู้เข้าประชุมรวม</div><div class="text-3xl font-extrabold mt-1" id="kpiTotalAttendees">0</div></div>
+      <div class="bg-white border border-[#EAECF0] rounded-[20px] p-5 shadow-soft card-hover"><div class="w-10 h-10 rounded-xl bg-[#F4F3FF] text-[#5925DC] flex items-center justify-center mb-4"><span class="material-symbols-outlined">hotel_class</span></div><div class="text-xs text-[#667085] font-semibold">ห้องยอดนิยม</div><div class="text-xl font-extrabold mt-2 truncate" id="kpiTopRoom">-</div></div>
+      <div class="bg-white border border-[#EAECF0] rounded-[20px] p-5 shadow-soft card-hover"><div class="w-10 h-10 rounded-xl bg-[#ECFDF3] text-[#027A48] flex items-center justify-center mb-4"><span class="material-symbols-outlined">payments</span></div><div class="text-xs text-[#667085] font-semibold">รายรับจากการจอง</div><div class="text-2xl md:text-3xl font-extrabold mt-1 price-badge" id="kpiTotalRevenue">฿0</div></div>
     </section>
 
-    <section class="bg-white border border-[#c2c6d4] rounded-xl p-4 flex flex-wrap items-center gap-4 shadow-sm">
-      <div class="flex-grow min-w-[220px]">
-        <label class="text-xs text-secondary font-medium block mb-1">ค้นหาตามชื่อผู้จอง / วัตถุประสงค์</label>
-        <div class="input-icon-wrap">
-          <span class="material-symbols-outlined input-icon">search</span>
-          <input class="input-field py-2 text-sm" id="adminSearchInput" placeholder="พิมพ์ชื่อ หรือ หัวข้อ..." oninput="renderAdminDashboard()"/>
+    <section class="bg-white border border-[#EAECF0] rounded-[20px] p-4 md:p-5 shadow-soft"><div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr_1fr_auto] gap-3 items-end">
+      <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">ค้นหา</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">search</span><input class="input-field py-3" id="adminSearchInput" placeholder="ชื่อผู้จอง อีเมล หรือวัตถุประสงค์..." oninput="debouncedAdminRender()"/></div></div>
+      <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">จากวันที่</label><input class="input-field py-3" id="adminDateStart" type="date" onchange="renderAdminDashboard()"/></div>
+      <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">ถึงวันที่</label><input class="input-field py-3" id="adminDateEnd" type="date" onchange="renderAdminDashboard()"/></div>
+      <button onclick="resetAdminFilter()" class="px-4 py-3 rounded-xl border border-[#D0D5DD] bg-[#F9FAFB] text-sm font-bold text-[#344054]">ล้างตัวกรอง</button>
+    </div></section>
+
+    <section class="grid grid-cols-1 xl:grid-cols-[.95fr_1.55fr] gap-6">
+      <div class="bg-white border border-[#EAECF0] rounded-[24px] p-5 md:p-6 shadow-soft">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#EAECF0]">
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#193B69]">bar_chart</span><div><h3 class="font-display font-extrabold">สถิติรายห้อง</h3><p class="text-[11px] text-[#98A2B3] mt-0.5">สลับดูแบบรายการหรือกราฟ</p></div></div>
+          <div class="flex items-center gap-1 bg-[#F2F4F7] rounded-xl p-1">
+            <button id="adminListViewBtn" class="admin-view-btn active px-3 py-1.5 rounded-lg border border-transparent text-xs font-bold" onclick="setAdminStatsView('list')">รายการ</button>
+            <button id="adminChartViewBtn" class="admin-view-btn px-3 py-1.5 rounded-lg border border-transparent text-xs font-bold text-[#344054]" onclick="setAdminStatsView('chart')">กราฟ</button>
+          </div>
+        </div>
+        <div id="adminRoomRankings" class="pt-5 space-y-5"></div>
+        <div id="adminChartPanel" class="hidden pt-5">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <div class="text-xs font-semibold text-[#667085]">ตัวชี้วัด</div>
+            <div class="flex items-center gap-1">
+              <button id="adminMetricBookingsBtn" class="admin-view-btn active px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] text-[11px] font-bold" onclick="setAdminChartMetric('bookings')">จำนวนการจอง</button>
+              <button id="adminMetricRevenueBtn" class="admin-view-btn px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] text-[11px] font-bold text-[#344054]" onclick="setAdminChartMetric('revenue')">รายรับ</button>
+            </div>
+          </div>
+          <div class="admin-chart-wrap"><canvas id="adminRoomChart"></canvas></div>
         </div>
       </div>
-      <div>
-        <label class="text-xs text-secondary font-medium block mb-1">จากวันที่</label>
-        <input class="input-field py-2 text-sm" id="adminDateStart" type="date" onchange="renderAdminDashboard()"/>
-      </div>
-      <div>
-        <label class="text-xs text-secondary font-medium block mb-1">ถึงวันที่</label>
-        <input class="input-field py-2 text-sm" id="adminDateEnd" type="date" onchange="renderAdminDashboard()"/>
-      </div>
-      <div class="flex items-end self-end">
-        <button onclick="resetAdminFilter()" class="text-sm text-secondary hover:text-primary px-3 py-2 border border-[#c2c6d4] rounded-lg transition-colors bg-[#f2f3fc]">
-          ล้างตัวกรอง
-        </button>
+      <div class="bg-white border border-[#EAECF0] rounded-[24px] overflow-hidden shadow-soft">
+        <div class="p-5 md:p-6 flex items-center justify-between border-b border-[#EAECF0]"><div><h2 class="font-display font-extrabold text-lg">ประวัติการใช้งานทั้งหมด</h2><p class="text-xs text-[#98A2B3] mt-1">รายการจองทั้งหมดตามตัวกรอง</p></div><span class="material-symbols-outlined text-[#193B69]">list_alt</span></div>
+        <div class="overflow-auto max-h-[520px]"><table class="w-full text-left"><thead class="sticky top-0 bg-white z-10 border-b border-[#EAECF0]"><tr class="text-xs text-[#667085]"><th class="p-4">วันที่ / เวลา</th><th class="p-4">ห้อง</th><th class="p-4">ผู้ใช้งาน</th><th class="p-4 text-center">ระยะเวลา</th><th class="p-4 text-center">ค่าจอง</th><th class="p-4 text-center">จัดการ</th></tr></thead><tbody class="text-sm divide-y divide-[#F2F4F7]" id="adminAllBookingsBody"></tbody></table></div>
       </div>
     </section>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-      <section class="lg:col-span-1 bg-white border border-[#c2c6d4] rounded-xl p-5 flex flex-col gap-4 shadow-sm h-full">
-        <h3 class="font-semibold flex items-center gap-2 border-b border-[#c2c6d4] pb-3">
-          <span class="material-symbols-outlined text-primary">bar_chart</span> สถิติความถี่รายห้อง
-        </h3>
-        <div class="flex flex-col gap-4" id="adminRoomRankings"></div>
-      </section>
-
-      <section class="lg:col-span-2 bg-white border border-[#c2c6d4] rounded-xl overflow-hidden shadow-sm h-full flex flex-col">
-        <div class="p-4 border-b border-[#c2c6d4] bg-[#f2f3fc]/50 flex justify-between items-center">
-          <h2 class="font-semibold">ประวัติการใช้งานทั้งหมด</h2>
-        </div>
-        <div class="overflow-auto flex-grow max-h-[500px]">
-          <table class="w-full text-left border-collapse relative">
-            <thead class="sticky top-0 bg-[#f2f3fc] z-10 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-              <tr class="text-sm border-b border-[#c2c6d4]">
-                <th class="p-3 font-semibold">วันที่จอง</th>
-                <th class="p-3 font-semibold">ห้องประชุม</th>
-                <th class="p-3 font-semibold">ผู้ใช้งาน</th>
-                <th class="p-3 font-semibold text-center">ระยะเวลา</th>
-                <th class="p-3 font-semibold text-center">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody class="text-sm divide-y divide-[#c2c6d4]/50" id="adminAllBookingsBody">
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
   </main>
 </div>
 
-<!-- ============ Modal 1: ฟอร์มจองห้องประชุม ============ -->
-<div class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" id="mainBookingModal">
-  <div class="bg-white rounded-xl w-full max-w-md flex flex-col overflow-hidden shadow-2xl scale-100 transition-transform">
-    <div class="p-4 border-b border-[#c2c6d4] flex items-center justify-between bg-[#f2f3fc]">
-      <h3 class="font-semibold text-primary flex items-center gap-2">
-        <span class="material-symbols-outlined">event_note</span> จองห้องประชุม
-      </h3>
-      <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e1e2ea] transition-colors" onclick="closeModal('mainBookingModal')">
-        <span class="material-symbols-outlined text-[20px]">close</span>
-      </button>
-    </div>
-    
-    <div class="p-5 overflow-y-auto">
-      <form id="bookingForm" class="flex flex-col gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium">1. เลือกห้องประชุม *</label>
-          <select class="input-field" id="room-select" required onchange="resetTimeSelection()">
-            <option disabled selected value="">กำลังโหลดข้อมูลห้อง...</option>
-          </select>
-        </div>
-        
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium">2. วันที่ใช้งาน *</label>
-          <input class="input-field" id="date-select" required type="date" onchange="resetTimeSelection()"/>
-        </div>
-
-        <div class="flex flex-col gap-1 mt-1">
-          <label class="text-sm font-medium">3. เลือกช่วงเวลา *</label>
-          <button type="button" onclick="openTimeModal()" class="w-full bg-[#f2f3fc] border border-[#c2c6d4] rounded-lg p-3 text-left flex justify-between items-center hover:bg-[#e1e2ea] transition-colors">
-            <span id="timeDisplay" class="text-on-surface-variant text-sm">คลิกเพื่อเลือกเวลา...</span>
-            <span class="material-symbols-outlined text-secondary">schedule</span>
-          </button>
-          <input type="hidden" id="starttime-select" required />
-          <input type="hidden" id="endtime-select" required />
-        </div>
-
-        <div class="flex flex-col gap-1 mt-1">
-          <label class="text-sm font-medium text-on-surface-variant">จำนวนผู้เข้าร่วม *</label>
-          <div class="input-icon-wrap">
-            <span class="material-symbols-outlined input-icon">group</span>
-            <input class="input-field" id="attendees-select" required type="number" min="1" placeholder="ระบุจำนวนคน"/>
-          </div>
-        </div>
-        
-        <div class="flex flex-col gap-1 mt-1">
-          <label class="text-sm font-medium text-on-surface-variant">หัวข้อ/วัตถุประสงค์ (ถ้ามี)</label>
-          <div class="input-icon-wrap">
-            <span class="material-symbols-outlined input-icon">assignment</span>
-            <input class="input-field" id="purpose-select" placeholder="เช่น ประชุมทีมโปรเจกต์" type="text"/>
-          </div>
-        </div>
-        
-        <p id="bookingMsg" class="text-sm font-medium text-error"></p>
-        
-        <button class="mt-2 w-full primary-btn text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center gap-2" type="submit" id="submitBookingBtn">
-          <span class="material-symbols-outlined text-[18px]">check_circle</span> ยืนยันการจอง
-        </button>
-      </form>
-    </div>
+<!-- BOOKING MODAL -->
+<div class="hidden fixed inset-0 bg-[#101828]/55 backdrop-blur-sm z-50 items-center justify-center p-4" id="mainBookingModal">
+  <div class="bg-white rounded-[28px] w-full max-w-lg overflow-hidden shadow-2xl">
+    <div class="px-6 py-5 border-b border-[#EAECF0] flex items-center justify-between"><div><p class="text-xs font-bold text-[#0E9384]">NEW BOOKING</p><h3 class="font-display text-xl font-extrabold mt-0.5">จองห้องประชุม</h3></div><button class="w-10 h-10 rounded-xl hover:bg-[#F2F4F7]" onclick="closeModal('mainBookingModal')"><span class="material-symbols-outlined">close</span></button></div>
+    <div class="p-6 overflow-y-auto max-h-[75vh]"><form id="bookingForm" class="space-y-4">
+      <div><label class="text-sm font-semibold block mb-1.5">เลือกห้องประชุม *</label><select class="input-field" id="room-select" required onchange="resetTimeSelection();updateBookingPricePreview()"><option disabled selected value="">กำลังโหลดข้อมูลห้อง...</option></select></div>
+      <div><label class="text-sm font-semibold block mb-1.5">วันที่ใช้งาน *</label><input class="input-field" id="date-select" required type="date" onchange="resetTimeSelection()"/></div>
+      <div><label class="text-sm font-semibold block mb-1.5">ช่วงเวลา *</label><button type="button" onclick="openTimeModal()" class="w-full input-field flex items-center justify-between text-left"><span id="timeDisplay" class="text-[#667085] text-sm">คลิกเพื่อเลือกเวลา...</span><span class="material-symbols-outlined text-[#193B69]">schedule</span></button><input type="hidden" id="starttime-select" required/><input type="hidden" id="endtime-select" required/></div>
+      <div id="bookingPriceSummary" class="hidden rounded-2xl border border-[#D7E3F5] bg-gradient-to-br from-[#F4F8FF] to-[#F0FBF9] p-4"><div class="flex items-center justify-between gap-3"><div><div class="text-[11px] uppercase tracking-wider font-bold text-[#0E9384]">ค่าใช้บริการ</div><div class="text-xs text-[#667085] mt-1" id="bookingPriceDetail">-</div></div><div class="text-xl font-extrabold text-[#193B69] price-badge" id="bookingTotalPrice">฿0</div></div></div>
+      <div><label class="text-sm font-semibold block mb-1.5">จำนวนผู้เข้าร่วม *</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">group</span><input class="input-field" id="attendees-select" required type="number" min="1" placeholder="ระบุจำนวนคน"/></div></div>
+      <div><label class="text-sm font-semibold block mb-1.5">หัวข้อ / วัตถุประสงค์ <span class="font-normal text-[#98A2B3]">(ถ้ามี)</span></label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">assignment</span><input class="input-field" id="purpose-select" placeholder="เช่น ประชุมทีมโปรเจกต์" type="text"/></div></div>
+      <p id="bookingMsg" class="text-sm font-medium text-[#D92D20] min-h-5"></p>
+      <button class="primary-btn w-full text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2" type="submit" id="submitBookingBtn"><span class="material-symbols-outlined">check_circle</span> ยืนยันการจอง</button>
+    </form></div>
   </div>
 </div>
 
-<!-- ============ Modal 2: หน้าต่างลอยเลือกเวลา ============ -->
-<div class="hidden fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4" id="timeModal">
-  <div class="bg-white rounded-xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-    <div class="p-4 border-b border-[#c2c6d4] flex items-center justify-between bg-[#f2f3fc]">
-      <div>
-        <h3 class="font-semibold text-primary flex items-center gap-2">
-          <span class="material-symbols-outlined">schedule</span> เลือกเวลา
-        </h3>
-        <p class="text-xs text-secondary mt-1" id="timeModalSubtitle">-</p>
-      </div>
-      <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e1e2ea]" onclick="closeModal('timeModal')">
-        <span class="material-symbols-outlined text-[20px]">close</span>
-      </button>
-    </div>
-    
-    <div class="p-5 overflow-y-auto bg-surface flex-grow relative">
-      <div class="flex items-center gap-4 mb-3 text-xs text-secondary justify-center bg-white p-2 rounded-lg border border-[#c2c6d4]/50 shadow-sm">
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-free inline-block"></span>ว่าง</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-busy inline-block"></span>มีผู้จองแล้ว</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>กำลังเลือก</span>
-      </div>
-      
-      <p class="text-xs text-secondary mb-2 text-center">คลิกเลือกช่วงเวลาว่างสีเขียว (เลือกติดกันได้)</p>
-      
-      <div id="modalTimelineWrap" class="border border-[#c2c6d4]/60 rounded-lg overflow-hidden bg-white shadow-sm"></div>
-    </div>
-
-    <div class="p-4 border-t border-[#c2c6d4] bg-white flex items-center justify-between gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-      <div class="flex flex-col">
-        <span class="text-xs text-secondary">เวลาที่เลือก</span>
-        <span class="text-sm font-bold text-primary" id="modalSelectionSummary">-</span>
-      </div>
-      <button class="primary-btn text-white text-sm font-semibold px-5 py-2.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed" id="modalConfirmBtn" disabled onclick="confirmTimeSelection()">
-        ยืนยันเวลานี้
-      </button>
-    </div>
+<!-- TIME MODAL -->
+<div class="hidden fixed inset-0 bg-[#101828]/55 backdrop-blur-sm z-[60] items-center justify-center p-4" id="timeModal">
+  <div class="bg-white rounded-[28px] max-w-md w-full max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+    <div class="p-5 border-b border-[#EAECF0] flex items-center justify-between"><div><p class="text-xs font-bold text-[#0E9384]">TIME SLOT</p><h3 class="font-display text-lg font-extrabold">เลือกช่วงเวลา</h3><p class="text-xs text-[#98A2B3] mt-1" id="timeModalSubtitle">-</p></div><button class="w-10 h-10 rounded-xl hover:bg-[#F2F4F7]" onclick="closeModal('timeModal')"><span class="material-symbols-outlined">close</span></button></div>
+    <div class="p-5 overflow-y-auto bg-[#F8FAFC] flex-1"><div class="flex items-center gap-4 text-xs text-[#667085] justify-center bg-white p-3 rounded-2xl border border-[#EAECF0] mb-4"><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#12B76A]"></i>ว่าง</span><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#D92D20]"></i>จองแล้ว</span><span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full bg-[#193B69]"></i>กำลังเลือก</span></div><p class="text-xs text-[#667085] text-center mb-3">เลือกช่วงเวลาที่ต่อเนื่องกันได้</p><div id="modalTimelineWrap" class="border border-[#EAECF0] rounded-2xl overflow-hidden bg-white"></div></div>
+    <div class="p-4 border-t border-[#EAECF0] bg-white flex items-center justify-between gap-3"><div><div class="text-[11px] text-[#98A2B3]">เวลาที่เลือก</div><div class="text-sm font-extrabold text-[#193B69]" id="modalSelectionSummary">-</div></div><button class="primary-btn text-white text-sm font-bold px-5 py-3 rounded-xl disabled:opacity-40" id="modalConfirmBtn" disabled onclick="confirmTimeSelection()">ยืนยันเวลานี้</button></div>
   </div>
 </div>
 
@@ -488,26 +323,97 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwKPgkw0z_o5pFfcF8PVxOu
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let roomsCache = [];
 let bookingsCache = [];
-let usersCache = []; 
+let usersCache = [];
+let roomsById = new Map();
+let bookingsByRoomDate = new Map();
+let bookingsByDate = new Map();
 let dashCal = { year: new Date().getFullYear(), month: new Date().getMonth() };
-let selectedDateForDetail = toISO(new Date()); 
+let selectedDateForDetail = toISO(new Date());
+let adminRenderTimer = null;
+let adminStatsView = 'list';
+let adminChartMetric = 'bookings';
+let adminRoomChart = null;
 
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const DAY_START_MIN = 8 * 60, DAY_END_MIN = 18 * 60, SLOT_MIN = 30;            
 let timeModalState = { run: null, anchor: null, focus: null };
 
+const DEFAULT_ROOM_PRICES = [300, 450, 600, 800, 1000, 1200];
+function money(value){ return '฿' + Number(value || 0).toLocaleString('th-TH', {maximumFractionDigits: 2}); }
+function getRoomRoundPrice(room){
+  if(!room) return 0;
+  const direct = Number(room.PricePerRound ?? room.RoundPrice ?? room.RoomPrice ?? room.Price ?? room.PricePerHour ?? 0);
+  if(Number.isFinite(direct) && direct > 0) return direct;
+  const idx = roomsCache.findIndex(r => String(r.RoomID) === String(room.RoomID));
+  return DEFAULT_ROOM_PRICES[Math.max(0, idx)] || 1000;
+}
+function getBookingPrice(booking){
+  const stored = Number(booking.TotalPrice);
+  if(Number.isFinite(stored) && stored > 0) return stored;
+  const room = roomsById.get(String(booking.RoomID));
+  return getRoomRoundPrice(room);
+}
+function updateBookingPricePreview(){
+  const box = document.getElementById('bookingPriceSummary');
+  const room = roomsById.get(String(document.getElementById('room-select').value));
+  const start = document.getElementById('starttime-select').value;
+  const end = document.getElementById('endtime-select').value;
+  if(!box || !room || !start || !end){ if(box) box.classList.add('hidden'); return; }
+  const rate = getRoomRoundPrice(room);
+  const hrs = hoursBetween(start,end);
+  document.getElementById('bookingPriceDetail').textContent = `${room.RoomName} · ${money(rate)} / รอบเดียว (ระยะเวลา ${hrs.toFixed(1)} ชม.)`;
+  document.getElementById('bookingTotalPrice').textContent = money(rate);
+  box.classList.remove('hidden');
+}
+
 async function fetchAPI(action, payload = null) {
-  if (action === 'GET') {
-    const response = await fetch(API_URL);
-    return response.json();
-  } else {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: action, ...payload })
-    });
-    return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const options = { signal: controller.signal };
+    if (action !== 'GET') {
+      options.method = 'POST';
+      options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+      options.body = JSON.stringify({ action, ...payload });
+    }
+    const response = await fetch(API_URL, options);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } finally {
+    clearTimeout(timeout);
   }
+}
+
+function rebuildIndexes() {
+  roomsById = new Map(roomsCache.map(r => [String(r.RoomID), r]));
+  bookingsByRoomDate = new Map();
+  bookingsByDate = new Map();
+
+  for (const b of bookingsCache) {
+    if (b.Status === 'cancelled') continue;
+    const date = String(b.Date || '').slice(0, 10);
+    const room = String(b.RoomID || '');
+    if (!date || !room) continue;
+
+    const roomKey = `${room}|${date}`;
+    if (!bookingsByRoomDate.has(roomKey)) bookingsByRoomDate.set(roomKey, []);
+    bookingsByRoomDate.get(roomKey).push(b);
+
+    if (!bookingsByDate.has(date)) bookingsByDate.set(date, []);
+    bookingsByDate.get(date).push(b);
+  }
+
+  for (const list of bookingsByRoomDate.values()) {
+    list.sort((a,b) => cleanTimeString(a.StartTime).localeCompare(cleanTimeString(b.StartTime)));
+  }
+  for (const list of bookingsByDate.values()) {
+    list.sort((a,b) => (cleanTimeString(a.StartTime) || '').localeCompare(cleanTimeString(b.StartTime) || ''));
+  }
+}
+
+function debouncedAdminRender() {
+  clearTimeout(adminRenderTimer);
+  adminRenderTimer = setTimeout(renderAdminDashboard, 120);
 }
 
 function toISO(d){ 
@@ -631,6 +537,7 @@ async function loadData(){
     roomsCache = data.rooms || [];
     bookingsCache = data.bookings || [];
     usersCache = data.users || [];
+    rebuildIndexes();
   } catch(error) {
     console.error(error);
   }
@@ -642,7 +549,7 @@ async function loadData(){
 }
 
 function bookingsForRoomOnDate(roomId, dateStr){
-  return bookingsCache.filter(b => b.RoomID === roomId && b.Status !== 'cancelled' && b.Date.slice(0, 10) === dateStr).sort((a,b) => cleanTimeString(a.StartTime).localeCompare(cleanTimeString(b.StartTime)));
+  return bookingsByRoomDate.get(`${roomId}|${dateStr}`) || [];
 }
 
 function updateAuthUI() {
@@ -678,11 +585,11 @@ function updateAuthUI() {
 }
 
 function getRoomAvailabilityText(roomId) {
-  const todayISO = toISO(new Date());
-  const bookings = bookingsForRoomOnDate(roomId, todayISO);
+  const dateISO = selectedDateForDetail || toISO(new Date());
+  const bookings = bookingsForRoomOnDate(roomId, dateISO);
   
   if (bookings.length === 0) {
-    return '<span class="text-free font-medium flex items-center gap-1"><span class="room-card-dot bg-free"></span> ว่างวันนี้ (08:00 - 18:00 น.)</span>';
+    return '<span class="room-availability text-[#027A48] text-xs font-semibold rounded-lg bg-[#ECFDF3] border border-[#A6F4C5] px-2.5 py-1.5" title="ว่าง 08:00 - 18:00 น.">ว่าง 08:00 - 18:00 น.</span>';
   }
 
   const WORK_START = 8 * 60;
@@ -707,10 +614,11 @@ function getRoomAvailabilityText(roomId) {
   }
 
   if (freeIntervals.length === 0) {
-    return '<span class="text-busy font-medium flex items-center gap-1"><span class="room-card-dot bg-busy"></span> มีการจองเต็มวัน</span>';
+    return '<span class="room-availability text-[#B42318] text-xs font-semibold rounded-lg bg-[#FEF3F2] border border-[#FECDCA] px-2.5 py-1.5" title="เต็มทั้งวัน">เต็มทั้งวัน</span>';
   }
 
-  return `<span class="text-primary font-medium text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200">ว่างช่วง: ${freeIntervals.join(', ')} น.</span>`;
+  const label = freeIntervals.join(', ');
+  return `<span class="room-availability text-[#175CD3] text-xs font-semibold rounded-lg bg-[#EFF8FF] border border-[#B2DDFF] px-2.5 py-1.5" title="ว่างช่วง: ${label} น.">ว่าง ${label} น.</span>`;
 }
 
 function renderDashboardAll(){
@@ -728,49 +636,33 @@ function renderDashboardAll(){
   
   grid.innerHTML = roomsCache.map(r => {
     const availabilityHtml = getRoomAvailabilityText(r.RoomID);
-    return `<div class="bg-[#f2f3fc]/40 border border-[#c2c6d4]/50 rounded-lg p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-      <h3 class="font-semibold text-primary text-sm">${r.RoomName}</h3>
-      <div>${availabilityHtml}</div>
-    </div>`;
+    const rate = getRoomRoundPrice(r);
+    return `<div class="room-price-card rounded-2xl border border-[#E4E7EC] bg-gradient-to-br from-white to-[#F8FAFC] p-4 flex flex-col justify-between gap-3 card-hover min-w-0"><div class="flex items-start justify-between gap-3 min-w-0"><div class="min-w-0"><h3 class="font-display font-extrabold text-[#193B69] text-sm truncate">${r.RoomName}</h3><div class="text-[11px] text-[#98A2B3] mt-1 room-rate">ค่าบริการ <span class="font-bold text-[#344054] price-badge">${money(rate)}</span> / รอบ</div></div><span class="material-symbols-outlined text-[#193B69] shrink-0">meeting_room</span></div><div class="min-w-0">${availabilityHtml}</div></div>`;
   }).join('');
 }
 
 function renderDailyBookingsSidebar(dateStr) {
   selectedDateForDetail = dateStr;
-  document.getElementById('selectedDateTitle').textContent = `ผู้จองประจำวันที่ ${formatThaiDate(dateStr)}`;
-  
+  const titleEl = document.getElementById('selectedDateTitle');
+  if(titleEl) titleEl.textContent = `ผู้จอง · ${formatThaiDate(dateStr)}`;
+  const roomDateTitle = document.getElementById('roomGridDateTitle');
+  if(roomDateTitle) roomDateTitle.textContent = formatThaiDate(dateStr);
   const container = document.getElementById('dailyBookingsList');
-  const dayBookings = bookingsCache.filter(b => b.Date.slice(0, 10) === dateStr && b.Status !== 'cancelled');
-
+  const dayBookings = bookingsByDate.get(dateStr) || [];
   if(dayBookings.length === 0) {
-    container.innerHTML = `<div class="text-center my-auto py-8 text-secondary text-sm">ไม่มีการจองห้องในวันนี้</div>`;
+    container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center py-8"><div class="w-12 h-12 rounded-2xl bg-[#F2F4F7] text-[#98A2B3] flex items-center justify-center mb-3"><span class="material-symbols-outlined">event_busy</span></div><div class="text-sm font-semibold text-[#344054]">ไม่มีการจองห้องในวันนี้</div><div class="text-xs text-[#98A2B3] mt-1">เลือกวันอื่น หรือกดจองห้องเพื่อสร้างรายการใหม่</div></div>`;
     return;
   }
-
-  container.innerHTML = dayBookings.map(b => {
-    const room = roomsCache.find(r => r.RoomID === b.RoomID);
+  const totalRevenue = dayBookings.reduce((sum,b) => sum + getBookingPrice(b), 0);
+  container.innerHTML = `<div class="flex items-center justify-between gap-3 mb-1 px-1"><span class="text-xs font-semibold text-[#667085]">${dayBookings.length} รายการ</span><span class="text-xs font-extrabold text-[#193B69]">${money(totalRevenue)}</span></div>` + dayBookings.map(b => {
+    const room = roomsById.get(String(b.RoomID));
     const roomName = room ? room.RoomName : b.RoomID;
-    
     const userObj = usersCache.find(u => u.Email === b.UserEmail);
-    const faculty = userObj && userObj.Faculty ? userObj.Faculty : 'ไม่ระบุคณะ';
-    const statusText = userObj && userObj.Status ? userObj.Status : 'สมาชิก';
-
-    const startT = cleanTimeString(b.StartTime);
-    const endT = cleanTimeString(b.EndTime);
-
-    return `
-      <div class="bg-[#f2f3fc]/60 border border-[#c2c6d4]/50 rounded-lg p-3 flex flex-col gap-1.5 shadow-2xs">
-        <div class="flex items-center justify-between gap-2 border-b border-[#c2c6d4]/30 pb-1.5">
-          <span class="font-bold text-primary text-sm truncate">${roomName}</span>
-          <span class="text-secondary font-medium bg-white px-2 py-0.5 rounded border border-[#c2c6d4]/40 text-xs whitespace-nowrap">${startT} - ${endT} น.</span>
-        </div>
-        <div class="text-sm font-semibold text-[#191c21] truncate mt-0.5">${b.UserName} <span class="text-xs font-normal text-secondary">(${statusText})</span></div>
-        <div class="text-xs text-secondary flex items-center gap-1 truncate">
-          <span class="material-symbols-outlined text-[14px]">domain</span> <span class="truncate">${faculty}</span>
-        </div>
-        ${b.Purpose ? `<div class="text-[11px] text-on-surface-variant bg-white px-2 py-1 rounded border border-[#c2c6d4]/30 truncate">วัตถุประสงค์: ${b.Purpose}</div>` : ''}
-      </div>
-    `;
+    const faculty = userObj?.Faculty || 'ไม่ระบุคณะ';
+    const statusText = userObj?.Status || 'สมาชิก';
+    const startT = cleanTimeString(b.StartTime), endT = cleanTimeString(b.EndTime);
+    const total = getBookingPrice(b);
+    return `<div class="booking-card"><div class="flex items-center justify-between gap-2"><div class="font-display font-extrabold text-sm text-[#193B69] truncate">${roomName}</div><span class="px-2.5 py-1 rounded-lg bg-[#EEF4FF] text-[#193B69] text-xs font-bold whitespace-nowrap">${startT} - ${endT}</span></div><div class="mt-3 flex items-center justify-between gap-3"><div class="min-w-0"><div class="text-sm font-bold text-[#101828] truncate">${b.UserName}</div><div class="text-[11px] text-[#667085] mt-0.5">${statusText} · ${faculty}</div></div><div class="text-sm font-extrabold text-[#0E9384] price-badge whitespace-nowrap">${money(total)}</div></div>${b.Purpose ? `<div class="mt-3 flex items-start gap-2 rounded-xl bg-white border border-[#EAECF0] px-3 py-2"><span class="material-symbols-outlined text-[16px] text-[#98A2B3]">description</span><div class="text-[11px] text-[#667085] line-clamp-2">${b.Purpose}</div></div>` : ''}</div>`;
   }).join('');
 }
 
@@ -803,6 +695,7 @@ function resetTimeSelection() {
   document.getElementById('endtime-select').value = '';
   document.getElementById('timeDisplay').textContent = 'คลิกเพื่อเลือกเวลา...';
   document.getElementById('timeDisplay').classList.remove('text-primary', 'font-bold');
+  const priceBox = document.getElementById('bookingPriceSummary'); if(priceBox) priceBox.classList.add('hidden');
 }
 
 function openTimeModal() {
@@ -918,6 +811,7 @@ function confirmTimeSelection() {
   displayBtn.classList.add('text-primary', 'font-bold');
 
   closeModal('timeModal');
+  updateBookingPricePreview();
 }
 
 document.getElementById('bookingForm').addEventListener('submit', async (e) => {
@@ -961,13 +855,16 @@ document.getElementById('bookingForm').addEventListener('submit', async (e) => {
     StartTime: startTime, 
     EndTime: endTime,
     Attendees: attendees,
-    Purpose: document.getElementById('purpose-select').value.trim()
+    Purpose: document.getElementById('purpose-select').value.trim(),
+    PricePerRound: getRoomRoundPrice(roomsById.get(String(document.getElementById('room-select').value))),
+    TotalPrice: getRoomRoundPrice(roomsById.get(String(document.getElementById('room-select').value)))
   };
 
   try {
     const res = await fetchAPI('book', payload);
     if(res.success) {
       bookingsCache.push({...payload, Status: 'confirmed'});
+      rebuildIndexes();
       closeModal('mainBookingModal');
       renderDashboardAll(); 
     } else {
@@ -984,18 +881,18 @@ document.getElementById('bookingForm').addEventListener('submit', async (e) => {
 function renderMyBookings(){
   const body = document.getElementById('myBookingBody');
   if(!currentUser) {
-     body.innerHTML = '<tr><td class="p-4 text-secondary" colspan="3">กรุณาเข้าสู่ระบบเพื่อดูประวัติ</td></tr>';
+     body.innerHTML = '<tr><td class="p-4 text-secondary" colspan="4">กรุณาเข้าสู่ระบบเพื่อดูประวัติ</td></tr>';
      return;
   }
   
   const mine = bookingsCache.filter(b => b.UserEmail === currentUser.Email).sort((a,b) => (b.Date+b.StartTime).localeCompare(a.Date+a.StartTime));
   if(!mine.length) {
-     body.innerHTML = '<tr><td class="p-4 text-secondary text-center" colspan="3">คุณยังไม่มีการจอง</td></tr>';
+     body.innerHTML = '<tr><td class="p-4 text-secondary text-center" colspan="4">คุณยังไม่มีการจอง</td></tr>';
      return;
   }
   
   body.innerHTML = mine.map(b => {
-    const room = roomsCache.find(r => r.RoomID === b.RoomID);
+    const room = roomsById.get(String(b.RoomID));
     const isCancelled = b.Status === 'cancelled';
     const displayDate = b.Date.slice(0,10);
     const startT = cleanTimeString(b.StartTime);
@@ -1008,6 +905,7 @@ function renderMyBookings(){
     return `<tr class="border-b border-[#c2c6d4]/30 ${isCancelled ? 'opacity-50 bg-[#f9f9ff]' : ''}">
       <td class="p-3 font-medium">${room ? room.RoomName : b.RoomID}</td>
       <td class="p-3 text-secondary text-[12px]">${displayDate} <br> <span class="font-medium text-[#191c21]">${startT} - ${endT} น.</span></td>
+      <td class="p-3 text-center align-middle font-bold text-[#0E9384] price-badge">${money(getBookingPrice(b))}</td>
       <td class="p-3 text-center align-middle">${statusHtml}</td>
     </tr>`;
   }).join('');
@@ -1020,6 +918,7 @@ async function cancelBooking(id){
       if(res.success) {
         const b = bookingsCache.find(x => x.BookingID === id);
         if(b) b.Status = 'cancelled';
+        rebuildIndexes();
         renderDashboardAll(); 
         if(currentUser && currentUser.Role === 'admin') renderAdminDashboard();
       }
@@ -1040,7 +939,9 @@ function buildCalendar(containerId, year, month){
   for(let d=1; d<=daysInMonth; d++){
     const dateStr = toISO(new Date(year, month, d));
     const totalRooms = roomsCache.length || 1;
-    const busy = roomsCache.filter(r => bookingsForRoomOnDate(r.RoomID, dateStr).length > 0).length;
+    const busy = roomsCache.reduce((count, room) => {
+      return count + ((bookingsByRoomDate.get(`${room.RoomID}|${dateStr}`) || []).length > 0 ? 1 : 0);
+    }, 0);
     const isToday = dateStr === todayISO, isPast = dateStr < todayISO;
     const isSelected = dateStr === selectedDateForDetail;
     
@@ -1085,46 +986,98 @@ function resetAdminFilter() {
   renderAdminDashboard();
 }
 
-function renderAdminDashboard() {
-  const searchQuery = document.getElementById('adminSearchInput').value.toLowerCase().trim();
-  const dateStart = document.getElementById('adminDateStart').value;
-  const dateEnd = document.getElementById('adminDateEnd').value;
+function getAdminFilteredBookings(){
+  const searchEl = document.getElementById('adminSearchInput');
+  const startEl = document.getElementById('adminDateStart');
+  const endEl = document.getElementById('adminDateEnd');
+  const searchQuery = (searchEl?.value || '').toLowerCase().trim();
+  const dateStart = startEl?.value || '';
+  const dateEnd = endEl?.value || '';
 
-  const filteredBookings = bookingsCache.filter(b => {
-    const matchSearch = searchQuery === '' || 
-      b.UserName.toLowerCase().includes(searchQuery) || 
-      (b.Purpose && b.Purpose.toLowerCase().includes(searchQuery)) ||
-      b.UserEmail.toLowerCase().includes(searchQuery);
-
-    const bDate = b.Date.slice(0, 10);
-    const matchStart = !dateStart || bDate >= dateStart;
-    const matchEnd = !dateEnd || bDate <= dateEnd;
-
-    return matchSearch && matchStart && matchEnd;
+  return bookingsCache.filter(b => {
+    const userName = String(b.UserName || '').toLowerCase();
+    const purpose = String(b.Purpose || '').toLowerCase();
+    const email = String(b.UserEmail || '').toLowerCase();
+    const matchSearch = !searchQuery || userName.includes(searchQuery) || purpose.includes(searchQuery) || email.includes(searchQuery);
+    const bDate = String(b.Date || '').slice(0,10);
+    return matchSearch && (!dateStart || bDate >= dateStart) && (!dateEnd || bDate <= dateEnd);
   });
+}
+
+function setAdminStatsView(view){
+  adminStatsView = view;
+  const list = document.getElementById('adminRoomRankings');
+  const chart = document.getElementById('adminChartPanel');
+  const listBtn = document.getElementById('adminListViewBtn');
+  const chartBtn = document.getElementById('adminChartViewBtn');
+  list?.classList.toggle('hidden', view !== 'list');
+  chart?.classList.toggle('hidden', view !== 'chart');
+  listBtn?.classList.toggle('active', view === 'list');
+  chartBtn?.classList.toggle('active', view === 'chart');
+  if(view === 'chart') renderAdminChart();
+}
+
+function setAdminChartMetric(metric){
+  adminChartMetric = metric;
+  document.getElementById('adminMetricBookingsBtn')?.classList.toggle('active', metric === 'bookings');
+  document.getElementById('adminMetricRevenueBtn')?.classList.toggle('active', metric === 'revenue');
+  renderAdminChart();
+}
+
+function renderAdminChart(){
+  if(typeof Chart === 'undefined') return;
+  const canvas = document.getElementById('adminRoomChart');
+  if(!canvas) return;
+  const filteredBookings = getAdminFilteredBookings().filter(b => b.Status !== 'cancelled');
+  const freq = {};
+  const revenue = {};
+  filteredBookings.forEach(b => {
+    const id = String(b.RoomID);
+    freq[id] = (freq[id] || 0) + 1;
+    revenue[id] = (revenue[id] || 0) + getBookingPrice(b);
+  });
+  const roomIds = roomsCache.map(r => String(r.RoomID)).filter(id => freq[id] || revenue[id]);
+  const labels = roomIds.map(id => roomsById.get(id)?.RoomName || id);
+  const values = roomIds.map(id => adminChartMetric === 'bookings' ? freq[id] : revenue[id]);
+  if(adminRoomChart) adminRoomChart.destroy();
+  adminRoomChart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: adminChartMetric === 'bookings' ? 'จำนวนการจอง' : 'รายรับ (บาท)', data: values, borderRadius: 8, backgroundColor: adminChartMetric === 'bookings' ? '#193B69' : '#0E9384', maxBarThickness: 42 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=> adminChartMetric === 'revenue' ? '฿' + Number(ctx.raw||0).toLocaleString('th-TH') : Number(ctx.raw||0) + ' ครั้ง'}}}, scales:{y:{beginAtZero:true, ticks:{callback:(v)=>adminChartMetric === 'revenue' ? '฿' + Number(v).toLocaleString('th-TH') : v}}, x:{grid:{display:false}}}}
+  });
+}
+
+function renderAdminDashboard() {
+  const filteredBookings = getAdminFilteredBookings();
 
   const activeBookings = filteredBookings.filter(b => b.Status !== 'cancelled');
   
   let totalHours = 0;
   let totalAttendees = 0;
-  const roomFrequency = {}; 
+  let totalRevenue = 0;
+  const roomFrequency = {};
+  const roomRevenue = {}; 
   
   activeBookings.forEach(b => {
     totalHours += hoursBetween(cleanTimeString(b.StartTime), cleanTimeString(b.EndTime));
     totalAttendees += Number(b.Attendees || 0);
+    const bookingRevenue = getBookingPrice(b);
+    totalRevenue += bookingRevenue;
     roomFrequency[b.RoomID] = (roomFrequency[b.RoomID] || 0) + 1;
+    roomRevenue[b.RoomID] = (roomRevenue[b.RoomID] || 0) + bookingRevenue;
   });
 
   document.getElementById('kpiTotalBookings').textContent = activeBookings.length;
   document.getElementById('kpiTotalHours').textContent = totalHours.toFixed(1);
   document.getElementById('kpiTotalAttendees').textContent = totalAttendees;
+  document.getElementById('kpiTotalRevenue').textContent = money(totalRevenue);
 
   let topRoomId = null;
   let maxFreq = 0;
   for (const [rId, freq] of Object.entries(roomFrequency)) {
     if(freq > maxFreq) { maxFreq = freq; topRoomId = rId; }
   }
-  const topRoomName = roomsCache.find(r => r.RoomID === topRoomId)?.RoomName || '-';
+  const topRoomName = roomsById.get(String(topRoomId))?.RoomName || '-';
   document.getElementById('kpiTopRoom').textContent = topRoomName;
 
   const rankContainer = document.getElementById('adminRoomRankings');
@@ -1135,13 +1088,13 @@ function renderAdminDashboard() {
     const maxUse = sortedRooms[0][1];
     
     rankContainer.innerHTML = sortedRooms.map(([rId, freq]) => {
-      const rName = roomsCache.find(r => r.RoomID === rId)?.RoomName || rId;
+      const rName = roomsById.get(String(rId))?.RoomName || rId;
       const widthPct = Math.max(10, Math.round((freq / maxUse) * 100)); 
       return `
       <div class="flex flex-col gap-1">
         <div class="flex justify-between text-sm">
           <span class="font-medium text-on-surface-variant">${rName}</span>
-          <span class="text-secondary font-bold">${freq} ครั้ง</span>
+          <span class="text-secondary font-bold">${freq} ครั้ง · ${money(roomRevenue[rId] || 0)}</span>
         </div>
         <div class="h-2.5 bg-[#f2f3fc] rounded-full overflow-hidden border border-[#c2c6d4]/50">
           <div class="h-full bg-[#0f6f66] rounded-full" style="width:${widthPct}%"></div>
@@ -1150,14 +1103,16 @@ function renderAdminDashboard() {
     }).join('');
   }
 
+  if(adminStatsView === 'chart') renderAdminChart();
+
   const tbody = document.getElementById('adminAllBookingsBody');
   const allSorted = [...filteredBookings].sort((a,b) => (b.Date+b.StartTime).localeCompare(a.Date+a.StartTime));
   
   if(allSorted.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-secondary">ไม่พบข้อมูลการจองที่ค้นหา</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-secondary">ไม่พบข้อมูลการจองที่ค้นหา</td></tr>';
   } else {
     tbody.innerHTML = allSorted.map(b => {
-      const room = roomsCache.find(r => r.RoomID === b.RoomID);
+      const room = roomsById.get(String(b.RoomID));
       const isCancelled = b.Status === 'cancelled';
       const displayDate = b.Date.slice(0, 10);
       const startT = cleanTimeString(b.StartTime);
@@ -1176,6 +1131,7 @@ function renderAdminDashboard() {
           <div class="text-[11px] text-secondary">วัตถุประสงค์: ${b.Purpose || '-'}</div>
         </td>
         <td class="p-3 text-center text-sm">${hoursBetween(startT, endT)} ชม.<br><span class="text-[10px] text-secondary">${b.Attendees} คน</span></td>
+        <td class="p-3 text-center text-sm font-bold text-[#0E9384] price-badge">${money(getBookingPrice(b))}</td>
         <td class="p-3 text-center">${actionHtml}</td>
       </tr>`;
     }).join('');
@@ -1183,30 +1139,40 @@ function renderAdminDashboard() {
 }
 
 function exportExcel(){
-  if(!bookingsCache.length){ 
-    alert('ยังไม่มีข้อมูลให้ดาวน์โหลดครับ'); 
+  const filtered = getAdminFilteredBookings();
+  if(!filtered.length){ 
+    alert('ไม่พบข้อมูลตามตัวกรองที่เลือกครับ'); 
     return; 
   }
-  
-  const exportData = bookingsCache.map(b => {
-    const room = roomsCache.find(r => r.RoomID === b.RoomID);
+
+  const exportData = filtered.map(b => {
+    const room = roomsById.get(String(b.RoomID));
     return {
       'รหัสการจอง': b.BookingID,
-      'วันที่': b.Date.slice(0,10),
+      'วันที่': String(b.Date || '').slice(0,10),
       'เวลาเริ่มต้น': cleanTimeString(b.StartTime),
       'เวลาสิ้นสุด': cleanTimeString(b.EndTime),
       'ห้องประชุม': room ? room.RoomName : b.RoomID,
       'ผู้ใช้งาน': b.UserName,
       'จำนวนคน': Number(b.Attendees || 0),
+      'ค่าบริการ/รอบ': getRoomRoundPrice(room),
+      'ค่าจองรวม': getBookingPrice(b),
       'วัตถุประสงค์': b.Purpose || '-',
       'สถานะ': b.Status === 'cancelled' ? 'ยกเลิกแล้ว' : 'ยืนยันแล้ว'
     };
   });
-  
+
+  const start = document.getElementById('adminDateStart')?.value || '';
+  const end = document.getElementById('adminDateEnd')?.value || '';
+  let suffix = 'filtered';
+  if(start && end) suffix = `${start}_to_${end}`;
+  else if(start) suffix = `from_${start}`;
+  else if(end) suffix = `to_${end}`;
+
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'รายงานการใช้ห้องประชุม');
-  XLSX.writeFile(workbook, 'meeting_room_report.xlsx');
+  XLSX.writeFile(workbook, `meeting_room_report_${suffix}.xlsx`);
 }
 
 // Start
@@ -1214,6 +1180,5 @@ showPage('dashboard');
 loadData();
 document.getElementById('dashCalLabel').textContent = THAI_MONTHS[dashCal.month] + ' ' + (dashCal.year + 543);
 </script>
-
 </body>
 </html>
