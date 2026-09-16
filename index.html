@@ -50,8 +50,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
 .icon-fill{font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 24}
 .page{display:none}.page.active{display:block}
 .glass{background:rgba(255,255,255,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.input-field{width:100%;padding:13px 15px;background:#fff;border:1px solid #D0D5DD;border-radius:14px;font-size:15px;color:#101828;transition:.2s}
-.input-field:focus{outline:none;border-color:#193B69;box-shadow:0 0 0 4px rgba(25,59,105,.10)}
+.input-field{width:100%;padding:13px 15px;background:#fff;border:1px solid #E1E8F0;border-radius:14px;font-size:15px;color:#101828;box-shadow:0 1px 2px rgba(16,24,40,.02);transition:border-color .2s,box-shadow .2s,background .2s}
+.input-field:hover{border-color:#BFCFE0}.input-field:focus{outline:none;border-color:#193B69;background:#fff;box-shadow:0 0 0 4px rgba(25,59,105,.09)}
 .input-icon-wrap{position:relative}.input-icon-wrap .input-field{padding-left:45px}.input-icon-wrap .input-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#98A2B3;pointer-events:none}
 .primary-btn{background:linear-gradient(135deg,#193B69,#0E9384);box-shadow:0 8px 20px rgba(25,59,105,.18)}
 .primary-btn:hover{filter:brightness(.97);transform:translateY(-1px)}
@@ -69,6 +69,10 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
 .daily-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 .booking-card{padding:12px;border:1px solid #E4E7EC;border-radius:16px;background:linear-gradient(180deg,#fff,#F8FAFC);transition:.2s}
 .booking-card:hover{border-color:#C9D5E7;box-shadow:0 8px 20px rgba(16,24,40,.06);transform:translateY(-1px)}
+.filter-panel{position:relative;background:linear-gradient(135deg,#FFFFFF 0%,#F7FAFE 100%);border:1px solid #E5ECF5;border-radius:22px;box-shadow:0 10px 30px rgba(25,59,105,.055)}
+.filter-panel:before{content:'';position:absolute;left:22px;right:22px;top:0;height:3px;border-radius:0 0 99px 99px;background:linear-gradient(90deg,#193B69,#0E9384);opacity:.72}
+.filter-panel label{letter-spacing:.01em;color:#475467}.filter-panel .input-field{background:rgba(255,255,255,.88);border-color:#D7E2EE}
+.filter-panel .input-field:focus{background:#fff}.filter-reset{border-color:#D7E2EE!important;background:#F4F7FB!important;color:#344054!important;transition:.2s}.filter-reset:hover{background:#EAF0F7!important;border-color:#BFCFE0!important;color:#193B69!important}
 .price-badge{font-variant-numeric:tabular-nums}.admin-chart-wrap{height:320px;position:relative}.admin-view-btn.active{background:#193B69;color:#fff;border-color:#193B69}.admin-view-btn{transition:.2s}.admin-section{display:none}.admin-section.active{display:block}.admin-menu-btn.active{background:#193B69;color:#fff;border-color:#193B69}
 .room-price-card{min-height:112px}
 @media (max-width:1023px){.calendar-panel,.daily-panel{height:auto;min-height:0;max-height:none}.calendar-panel{min-height:560px}.daily-panel{height:560px;max-height:560px;min-height:560px}}
@@ -267,7 +271,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
 
     <div id="admin-bookings" class="admin-section space-y-6">
     <section class="flex flex-col sm:flex-row sm:items-end justify-between gap-4"><div><p class="text-xs font-bold text-[#0E9384] uppercase tracking-[.18em]">Bookings & reports</p><h1 class="font-display text-2xl font-extrabold mt-1">จัดการการจองและรายงาน</h1><p class="text-sm text-[#667085] mt-2">กรองรายการด้านล่าง แล้วดาวน์โหลด Excel ได้ทันทีจากหน้านี้</p></div><button onclick="exportExcel()" class="primary-btn text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2"><span class="material-symbols-outlined">download</span>ดาวน์โหลด Excel ตามตัวกรอง</button></section>
-    <section class="bg-white border border-[#EAECF0] rounded-[20px] p-4 md:p-5 shadow-soft"><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-end">
+    <section class="filter-panel p-4 md:p-5"><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-end">
       <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">ค้นหา</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">search</span><input class="input-field py-3" id="adminSearchInput" placeholder="ชื่อผู้จอง อีเมล หรือวัตถุประสงค์..." oninput="debouncedAdminRender()"/></div></div>
       <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">ผู้จอง</label><select class="input-field py-3" id="adminUserFilter" onchange="renderAdminDashboard()"><option value="">ผู้จองทั้งหมด</option></select></div>
       <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">สถานะผู้ใช้</label><select class="input-field py-3" id="adminUserStatusFilter" onchange="renderAdminDashboard()"><option value="">ทุกสถานะ</option></select></div>
@@ -275,7 +279,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
       <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">สาขาวิชา</label><select class="input-field py-3" id="adminMajorFilter" onchange="renderAdminDashboard()"><option value="">ทุกสาขา</option></select></div>
 <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">จากวันที่</label><input class="input-field py-3" id="adminDateStart" type="date" onclick="this.showPicker && this.showPicker()" onchange="renderAdminDashboard()"/></div>
 <div><label class="text-xs font-semibold text-[#667085] block mb-1.5">ถึงวันที่</label><input class="input-field py-3" id="adminDateEnd" type="date" onclick="this.showPicker && this.showPicker()" onchange="renderAdminDashboard()"/></div>
-      <button onclick="resetAdminFilter()" class="px-4 py-3 rounded-xl border border-[#D0D5DD] bg-[#F9FAFB] text-sm font-bold text-[#344054]">ล้างตัวกรองทั้งหมด</button>
+      <button onclick="resetAdminFilter()" class="filter-reset px-4 py-3 rounded-xl border text-sm font-bold flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[18px]">restart_alt</span>ล้างตัวกรองทั้งหมด</button>
     </div></section>
 
     <section class="grid grid-cols-1 xl:grid-cols-[.95fr_1.55fr] gap-6">
