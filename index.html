@@ -143,7 +143,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
         </div>
         <div class="p-7 md:p-9">
           <form id="signupForm" class="space-y-4">
-            <div><label class="text-sm font-semibold block mb-1.5">ชื่อ-นามสกุล</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">person</span><input class="input-field" id="signup-fullName" placeholder="ชื่อจากบัญชี Google" required type="text"/></div></div>
+            <div><label class="text-sm font-semibold block mb-1.5">ชื่อ-นามสกุล</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">person</span><input class="input-field" id="signup-fullName" placeholder="ใส่ชื่อ-นามสกุล" required type="text"/></div></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div><label class="text-sm font-semibold block mb-1.5">สถานะ</label><select class="input-field" id="signup-status" required><option disabled selected value="">เลือกสถานะ...</option><option value="นักศึกษา">นักศึกษา</option><option value="อาจารย์">อาจารย์</option><option value="บุคลากร">บุคลากร</option></select></div>
               <div><label class="text-sm font-semibold block mb-1.5">เบอร์โทรศัพท์</label><div class="input-icon-wrap"><span class="material-symbols-outlined input-icon">call</span><input class="input-field" id="signup-phone" placeholder="08X-XXX-XXXX" required type="tel"/></div></div>
@@ -173,7 +173,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:#F7F9FC;color:#101828}
       </div>
       <div class="flex items-center gap-2" id="navGuestActions">
         <button class="px-4 py-2 rounded-xl text-sm font-semibold text-[#193B69] hover:bg-[#EEF4FF]" onclick="showPage('login')">เข้าสู่ระบบ</button>
-        <button class="primary-btn text-white px-4 py-2.5 rounded-xl text-sm font-bold" onclick="showPage('signup')">สมัครสมาชิก</button>
+        
       </div>
       <div class="hidden items-center gap-2" id="navUserActions">
         <button class="hidden items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-[#193B69] border border-[#D0D5DD] hover:bg-white" id="adminNavBtn" onclick="goToAdmin()"><span class="material-symbols-outlined text-[18px]">space_dashboard</span><span class="hide-mobile">แผงผู้บริหาร</span></button>
