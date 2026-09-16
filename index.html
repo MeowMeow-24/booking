@@ -526,7 +526,8 @@ async function handleGoogleCredential(response){
     }
     message.textContent = res.message || 'ไม่สามารถเข้าสู่ระบบได้';
   } catch(error) {
-    message.textContent = 'ไม่สามารถตรวจสอบบัญชี Google ได้';
+  console.error(error);
+  message.textContent = "เชื่อมต่อ Apps Script ไม่สำเร็จ: " + error.message;
   }
 }
 
